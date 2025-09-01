@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vehicle Registration Tree View -->
+    <record id="view_vehicle_registration_tree" model="ir.ui.view">
+        <field name="name">vehicle.registration.list</field>
+        <field name="model">vehicle.registration</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="chassis_number"/>
+                <field name="driver_name"/>
+                <field name="brand"/>
+                <field name="plate_sequence"/>
+                <field name="unique_plate_number"/>
+                <field name="region_code"/>
+                <field name="print_date"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Vehicle Registration Form View -->
+    <record id="view_vehicle_registration_form" model="ir.ui.view">
+        <field name="name">vehicle.registration.form</field>
+        <field name="model">vehicle.registration</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group name="vehicle_info" string="Vehicle Information">
+                            <field name="chassis_number"/>
+                            <field name="brand"/>
+                            <field name="vehicle_type"/>
+                            <field name="manufacturing_year"/>
+                            <field name="color"/>
+                            <field name="fiscal_power"/>
+                        </group>
+                        <group name="driver_info" string="Driver Information">
+                            <field name="driver_name"/>
+                            <field name="driver_address"/>
+                            <field name="tax_number"/>
+                            <field name="usage"/>
+                            <field name="first_registration"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group name="registration_info" string="Registration Information">
+                            <field name="reference_number"/>
+                            <field name="region_code"/>
+                            <field name="plate_sequence" readonly="1"/>
+                            <field name="unique_plate_number" readonly="1"/>
+                        </group>
+                        <group name="print_info" string="Print Information">
+                            <field name="print_location"/>
+                            <field name="print_date"/>
+                            <field name="is_reprinted"/>
+                        </group>
+                    </group>
+                    <group name="qr_info" string="QR Code">
+                        <field name="qr_code_data" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vehicle Registration Action -->
+    <record id="action_vehicle_registration" model="ir.actions.act_window">
+        <field name="name">Vehicle Registrations</field>
+        <field name="res_model">vehicle.registration</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first vehicle registration!
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_vehicle_registration_root"
+              name="Vehicle Registration"
+              sequence="10"/>
+    
+    <menuitem id="menu_vehicle_registration"
+              name="Registrations"
+              parent="menu_vehicle_registration_root"
+              action="action_vehicle_registration"
+              sequence="10"/>
+</odoo>
