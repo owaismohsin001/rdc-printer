@@ -19,6 +19,7 @@ Long description of module's purpose
         "security/ir.model.access.csv",
         "views/views.xml",
         "views/templates.xml",
+        "views/vehicle_document_actions.xml",
         "views/vehicle_registration_views.xml",
     ],
     # only loaded in demonstration mode

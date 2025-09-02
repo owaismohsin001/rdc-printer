@@ -193,7 +193,7 @@
 
 
     <!-- Vehicle Document Action -->
-    <!-- <record id="action_vehicle_document" model="ir.actions.act_window">
+    <record id="action_vehicle_document" model="ir.actions.act_window">
         <field name="name">Vehicle Documents</field>
         <field name="res_model">vehicle.document</field>
         <field name="view_mode">list,form</field>
@@ -206,7 +206,7 @@
                 inspection reports, and other vehicle-related files.
             </p>
         </field>
-    </record> -->
+    </record>
 
 <record id="view_vehicle_document_list" model="ir.ui.view">
     <field name="name">vehicle.document.list</field>

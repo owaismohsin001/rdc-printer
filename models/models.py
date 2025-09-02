@@ -12,7 +12,7 @@ class VehicleRegistration(models.Model):
     _name = "vehicle.registration"
     _description = "Vehicle Registration"
     _rec_name = "chassis_number"
-    _inherit = ["mail.thread", "mail.activity.mixin"]  # 1
+    # _inherit = ["mail.thread", "mail.activity.mixin"]  # 1
 
     qr_code_image = fields.Binary(string="QR Code Image")
     # Unique identifier (chassis number)
@@ -184,10 +184,6 @@ class VehicleRegistration(models.Model):
         # record.qr_code_data = json.dumps(qr_data)
         record.qr_code_data = json.dumps(qr_data, indent=2)  # 1
         record.qr_code_image = qr_image_base64
-        record.message_post(
-            body=f"QR Code generated successfully for vehicle {record.chassis_number}",
-            subject="QR Code Generated",
-        )  # 1
 
         _logger.info(f"QR code generated successfully for {record.chassis_number}")
         _logger.info(f"QR image size: {len(qr_image_base64)} characters (base64)")
@@ -201,7 +197,7 @@ class PrintHistory(models.Model):
     _order = "print_date desc"
 
     vehicle_id = fields.Many2one(
-        "vehicle.registration", string="Vehicle", required=True
+        "vehicle.registration", string="Vehicle", required=True, ondelete="cascade"
     )
     print_type = fields.Selection(
         [
