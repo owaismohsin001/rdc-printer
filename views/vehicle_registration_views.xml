@@ -75,7 +75,7 @@
                     <group>
                         <group name="qr_display" string="QR Code">
                             <field name="qr_code_image" widget="image" readonly="1" 
-                                   class="oe_avatar" options="{'size': [250, 250]}"
+                                   class="oe_avatar" options="{'size': [350, 350]}"
                                    help="QR code containing vehicle information"/>
                         </group>
                         <group name="qr_data" string="QR Code Data">
