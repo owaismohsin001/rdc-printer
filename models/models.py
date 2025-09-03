@@ -1,3 +1,4 @@
+from datetime import datetime, date, timedelta
 from odoo import models, fields, api
 import qrcode
 import base64
@@ -213,6 +214,22 @@ class VehicleRegistration(models.Model):
         plate = f"{four_digit_number:04d}{first_letter}{second_letter}{region_code}"
 
         return plate
+
+    # 3
+    def action_print_carte_rose(self):
+        """Generate and print Carte Rose"""
+        if not self.qr_code_image:
+            self.generate_qr_code()
+        self.env["vehicle.print.history"].create(
+            {
+                "vehicle_id": self.id,
+                "print_type": "carte_rose",
+                "printer_name": "Authentys Pro RT1",
+                "print_status": "success",
+                "notes": "Carte Rose printed",
+            }
+        )
+        return self.env.ref("rdc_printer.action_report_carte_rose").report_action(self)
 
 
 # 2

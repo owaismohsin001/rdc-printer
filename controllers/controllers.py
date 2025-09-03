@@ -575,3 +575,56 @@ class VehicleRegistrationController(http.Controller):
             return int(value)
         except (ValueError, TypeError):
             return None
+
+    # 3
+    @http.route(
+        "/api/vehicle/carte_rose/<string:chassis_number>",
+        type="http",
+        auth="public",
+        methods=["GET"],
+        csrf=False,
+    )
+    def get_carte_rose_pdf(self, chassis_number, **kwargs):
+        """Generate Carte Rose PDF via API"""
+        try:
+            vehicle = (
+                request.env["vehicle.registration"]
+                .sudo()
+                .search([("chassis_number", "=", chassis_number)], limit=1)
+            )
+
+            if not vehicle:
+                return self._error_response("Vehicle not found", 404)
+
+            # Generate QR code if not exists
+            if not vehicle.qr_code_image:
+                vehicle.generate_qr_code()
+
+            # Generate PDF
+            report = request.env.ref("rdc_printer.action_report_carte_rose").sudo()
+            pdf, _ = report._render_qweb_pdf([vehicle.id])
+
+            # Create print history
+            request.env["vehicle.print.history"].sudo().create(
+                {
+                    "vehicle_id": vehicle.id,
+                    "print_type": "carte_rose",
+                    "printer_name": "Authentys Pro RT1",
+                    "print_status": "success",
+                    "notes": "Carte Rose generated via API",
+                }
+            )
+
+            return request.make_response(
+                pdf,
+                headers=[
+                    ("Content-Type", "application/pdf"),
+                    (
+                        "Content-Disposition",
+                        f'attachment; filename="carte_rose_{chassis_number}.pdf"',
+                    ),
+                ],
+            )
+
+        except Exception as e:
+            return self._error_response(str(e), 500)

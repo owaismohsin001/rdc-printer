@@ -27,6 +27,8 @@
                 <header>
                     <button name="generate_qr_code" type="object" string="Generate QR Code" class="btn-primary"
                             help="Generate QR code for this vehicle registration"/>
+                    <button name="action_print_carte_rose"  type='object' string="Print Carte Rose" class="btn-success"
+                            help="Generate and print Carte Rose PDF" />      
                 </header>
                 <sheet>
                     <!-- Statistics Button Box -->
