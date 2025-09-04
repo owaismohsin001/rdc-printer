@@ -125,7 +125,7 @@
     </data>
 
     <data noupdate="0">
-        <!-- Report Action -->
+        <!-- Report Action x100 -->
         <record id="action_report_carte_rose" model="ir.actions.report">
             <field name="name">Carte Rose</field>
             <field name="model">vehicle.registration</field>
