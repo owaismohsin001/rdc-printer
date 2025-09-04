@@ -1,0 +1,60 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+<!--
+    <record model="ir.ui.view" id="/mnt/c/windows/system32/odoo18/addons/rdc_printer.list">
+      <field name="name">/mnt/c/Windows/System32/odoo18/addons/rdc_printer list</field>
+      <field name="model">/mnt/c/windows/system32/odoo18/addons/rdc_printer./mnt/c/windows/system32/odoo18/addons/rdc_printer</field>
+      <field name="arch" type="xml">
+        <list>
+          <field name="name"/>
+          <field name="value"/>
+          <field name="value2"/>
+        </list>
+      </field>
+    </record>
+-->
+
+    <!-- actions opening views on models -->
+<!--
+    <record model="ir.actions.act_window" id="/mnt/c/windows/system32/odoo18/addons/rdc_printer.action_window">
+      <field name="name">/mnt/c/Windows/System32/odoo18/addons/rdc_printer window</field>
+      <field name="res_model">/mnt/c/windows/system32/odoo18/addons/rdc_printer./mnt/c/windows/system32/odoo18/addons/rdc_printer</field>
+      <field name="view_mode">list,form</field>
+    </record>
+-->
+
+    <!-- server action to the one above -->
+<!--
+    <record model="ir.actions.server" id="/mnt/c/windows/system32/odoo18/addons/rdc_printer.action_server">
+      <field name="name">/mnt/c/Windows/System32/odoo18/addons/rdc_printer server</field>
+      <field name="model_id" ref="model_/mnt/c/windows/system32/odoo18/addons/rdc_printer_/mnt/c/windows/system32/odoo18/addons/rdc_printer"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "list,form",
+          "res_model": model._name,
+        }
+      </field>
+    </record>
+-->
+
+    <!-- Top menu item -->
+<!--
+    <menuitem name="/mnt/c/Windows/System32/odoo18/addons/rdc_printer" id="/mnt/c/windows/system32/odoo18/addons/rdc_printer.menu_root"/>
+-->
+    <!-- menu categories -->
+<!--
+    <menuitem name="Menu 1" id="/mnt/c/windows/system32/odoo18/addons/rdc_printer.menu_1" parent="/mnt/c/windows/system32/odoo18/addons/rdc_printer.menu_root"/>
+    <menuitem name="Menu 2" id="/mnt/c/windows/system32/odoo18/addons/rdc_printer.menu_2" parent="/mnt/c/windows/system32/odoo18/addons/rdc_printer.menu_root"/>
+-->
+    <!-- actions -->
+<!--
+    <menuitem name="List" id="/mnt/c/windows/system32/odoo18/addons/rdc_printer.menu_1_list" parent="/mnt/c/windows/system32/odoo18/addons/rdc_printer.menu_1"
+              action="/mnt/c/windows/system32/odoo18/addons/rdc_printer.action_window"/>
+    <menuitem name="Server to list" id="/mnt/c/windows/system32/odoo18/addons/rdc_printer" parent="/mnt/c/windows/system32/odoo18/addons/rdc_printer.menu_2"
+              action="/mnt/c/windows/system32/odoo18/addons/rdc_printer.action_server"/>
+-->
+  </data>
+</odoo>

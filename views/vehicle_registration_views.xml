@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vehicle Registration Tree View -->
+    <record id="view_vehicle_registration_tree" model="ir.ui.view">
+        <field name="name">vehicle.registration.list</field>
+        <field name="model">vehicle.registration</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="chassis_number"/>
+                <field name="driver_name"/>
+                <field name="brand"/>
+                <field name="plate_sequence"/>
+                <field name="unique_plate_number"/>
+                <field name="region_code"/>
+                <field name="print_date"/>
+                <field name="is_reprinted"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Vehicle Registration Form View -->
+    <record id="view_vehicle_registration_form" model="ir.ui.view">
+        <field name="name">vehicle.registration.form</field>
+        <field name="model">vehicle.registration</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="generate_qr_code" type="object" string="Generate QR Code" class="btn-primary"
+                            help="Generate QR code for this vehicle registration"/>
+                    <button name="action_print_carte_rose"  type='object' string="Print Carte Rose" class="btn-success"
+                            help="Generate and print Carte Rose PDF" />      
+                </header>
+                <sheet>
+                    <!-- Statistics Button Box -->
+                    <!-- <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_view_documents" icon="fa-file-text-o">
+                            <field string="Documents" name="document_ids" widget="statinfo"/>
+                        </button>
+                    </div> -->
+                    
+                    <!-- Main Vehicle and Driver Information -->
+                    <group>
+                        <group name="vehicle_info" string="Vehicle Information">
+                            <field name="chassis_number" placeholder="e.g., ABC123XYZ789"/>
+                            <field name="brand" placeholder="e.g., Toyota, Honda"/>
+                            <field name="vehicle_type" placeholder="e.g., Sedan, SUV"/>
+                            <field name="manufacturing_year" placeholder="e.g., 2020"/>
+                            <field name="color" placeholder="e.g., Blue, Red"/>
+                            <field name="fiscal_power" placeholder="e.g., 10"/>
+                        </group>
+                        <group name="driver_info" string="Driver Information">
+                            <field name="driver_name" placeholder="Full driver name"/>
+                            <field name="driver_address" placeholder="Complete address"/>
+                            <field name="tax_number" placeholder="Tax identification number"/>
+                            <field name="usage" placeholder="e.g., Personal, Commercial"/>
+                            <field name="first_registration" placeholder="e.g., 2020"/>
+                        </group>
+                    </group>
+                    
+                    <!-- Registration and Print Information -->
+                    <group>
+                        <group name="registration_info" string="Registration Information">
+                            <field name="reference_number" placeholder="Reference number"/>
+                            <field name="region_code" help="Select the region for license plate"/>
+                            <field name="plate_sequence" readonly="1" help="Auto-generated plate sequence"/>
+                            <field name="unique_plate_number" readonly="1" help="Auto-generated unique number"/>
+                        </group>
+                        <group name="print_info" string="Print Information">
+                            <field name="print_location" placeholder="e.g., Main Office"/>
+                            <field name="print_date"/>
+                            <field name="is_reprinted" help="Check if this is a reprint"/>
+                        </group>
+                    </group>
+
+                    <!-- QR Code Section - Dedicated Area -->
+                    <separator string="QR Code Information"/>
+                    <group>
+                        <group name="qr_display" string="QR Code">
+                            <field name="qr_code_image" widget="image" readonly="1" 
+                                   class="oe_avatar" options="{'size': [350, 350]}"
+                                   help="QR code containing vehicle information"/>
+                        </group>
+                        <group name="qr_data" string="QR Code Data">
+                            <field name="qr_code_data" readonly="1" widget="text"
+                                   help="JSON data encoded in the QR code"/>
+                            <div class="alert alert-info" role="alert" style="margin-top: 10px;">
+                                <strong>Note:</strong> Click "Generate QR Code" button to create or update the QR code with current vehicle information.
+                            </div>
+                        </group>
+                    </group>
+
+                    <!-- Documents Section with Upload Capability -->
+                    <notebook>
+                        <page string="Documents &amp; Attachments" name="documents">
+                            <div class="alert alert-info" role="alert" style="margin-bottom: 15px;">
+                                <i class="fa fa-info-circle"/> <strong>Document Management:</strong> 
+                                Upload and manage all vehicle-related documents here. You can add multiple documents of different types.
+                            </div>
+                            
+                            <!-- Document Upload Section -->
+                            <group string="Upload New Document" name="upload_section">
+                                <field name="document_ids" context="{'default_vehicle_id': id}" mode="list,form">
+    <list editable="bottom">
+        <field name="document_name"/>
+        <field name="document_type"/>
+        <field name="document_file" filename="file_name" widget="binary"/>
+        <field name="file_name" readonly="1"/>
+        <field name="upload_date" readonly="1"/>
+    </list>
+    <form>
+        <group>
+            <group>
+                <field name="document_name" required="1"/>
+                <field name="document_type" required="1"/>
+                <field name="upload_date" readonly="1"/>
+            </group>
+            <group>
+                <field name="document_file" filename="file_name" widget="binary" required="1"/>
+                <field name="file_name" readonly="1"/>
+            </group>
+        </group>
+    </form>
+</field>
+
+
+
+                            </group>
+                        </page>
+                        
+                      
+                    </notebook>
+                </sheet>
+                
+                <!-- Chatter for communication -->
+                <!-- <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div> -->
+            </form>
+        </field>
+    </record>
+
+    <!-- Vehicle Document Form View -->
+    <record id="view_vehicle_document_form" model="ir.ui.view">
+        <field name="name">vehicle.document.form</field>
+        <field name="model">vehicle.document</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="document_name" placeholder="Document Name"/>
+                        </h1>
+                        <h3>
+                            <field name="document_type" widget="badge"/>
+                        </h3>
+                    </div>
+                    
+                    <group>
+                        <group>
+                            <field name="vehicle_id" options="{'no_create': True}"/>
+                            <field name="upload_date" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="document_file" filename="file_name" widget="binary"/>
+                            <field name="file_name" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <div class="alert alert-info" role="alert" style="margin-top: 15px;">
+                        <i class="fa fa-info-circle"/> <strong>File Information:</strong> 
+                        This document is associated with vehicle chassis number: 
+                        <strong><field name="vehicle_id" readonly="1" nolabel="1"/></strong>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vehicle Document Tree View -->
+  <record id="view_vehicle_document_list" model="ir.ui.view">
+    <field name="name">vehicle.document.list</field>
+    <field name="model">vehicle.document</field>
+    <field name="arch" type="xml">
+        <list>
+            <field name="vehicle_id"/>
+            <field name="document_name"/>
+            <field name="document_type" widget="badge"/>
+        </list>
+    </field>
+</record>
+
+
+
+
+    <!-- Vehicle Document Action -->
+    <record id="action_vehicle_document" model="ir.actions.act_window">
+        <field name="name">Vehicle Documents</field>
+        <field name="res_model">vehicle.document</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Upload your first vehicle document!
+            </p>
+            <p>
+                Documents can include registration papers, insurance certificates, 
+                inspection reports, and other vehicle-related files.
+            </p>
+        </field>
+    </record>
+
+<record id="view_vehicle_document_list" model="ir.ui.view">
+    <field name="name">vehicle.document.list</field>
+    <field name="model">vehicle.document</field>
+    <field name="arch" type="xml">
+        <list>
+            <field name="vehicle_id"/>
+            <field name="document_name"/>
+            <field name="document_type" widget="badge"/>
+        </list>
+    </field>
+</record>
+
+    <!-- Vehicle Registration Action -->
+    <record id="action_vehicle_registration" model="ir.actions.act_window">
+        <field name="name">Vehicle Registrations</field>
+        <field name="res_model">vehicle.registration</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first vehicle registration!
+            </p>
+            <p>
+                Register vehicles with complete information, generate QR codes, 
+                and manage all related documents in one place.
+            </p>
+        </field>
+    </record>
+
+    <!-- Search View for Vehicle Registration -->
+    <record id="view_vehicle_registration_search" model="ir.ui.view">
+        <field name="name">vehicle.registration.search</field>
+        <field name="model">vehicle.registration</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="chassis_number" string="Chassis Number"/>
+                <field name="driver_name" string="Driver Name"/>
+                <field name="brand" string="Brand"/>
+                <field name="plate_sequence" string="Plate Number"/>
+                <field name="region_code" string="Region"/>
+                
+                <filter string="Recently Registered" name="recent" 
+                        domain="[('create_date', '&gt;=', (context_today() - datetime.timedelta(days=30)).strftime('%%Y-%%m-%%d'))]"/>
+                <filter string="Reprinted" name="reprinted" domain="[('is_reprinted', '=', True)]"/>
+                
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Region" name="group_region" context="{'group_by': 'region_code'}"/>
+                    <filter string="Brand" name="group_brand" context="{'group_by': 'brand'}"/>
+                    <filter string="Print Date" name="group_print_date" context="{'group_by': 'print_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Menu Items -->
+    <menuitem id="menu_vehicle_registration_root"
+              name="Vehicle Registration"
+              sequence="10"/>
+    
+    <menuitem id="menu_vehicle_registration"
+              name="Registrations"
+              parent="menu_vehicle_registration_root"
+              action="action_vehicle_registration"
+              sequence="10"/>
+              
+    <menuitem id="menu_vehicle_documents"
+              name="Documents"
+              parent="menu_vehicle_registration_root"
+              action="action_vehicle_document"
+              sequence="20"/>
+</odoo>

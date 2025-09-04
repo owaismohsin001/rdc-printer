@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Paper format -->
+    <record id="paperformat_carte_rose" model="report.paperformat">
+        <field name="name">Carte Rose Format</field>
+        <field name="format">custom</field>
+        <field name="page_height">54</field>
+        <field name="page_width">86</field>
+        <field name="margin_top">0</field>
+        <field name="margin_bottom">0</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
+        <field name="orientation">Portrait</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <!-- Report Template -->
+    <template id="carte_rose_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="vehicle">
+
+                <!-- FRONT SIDE -->
+                <div class="page" style="page-break-after: always; width:86mm; height:54mm; font-size:7px; font-family:Arial,sans-serif; background:#ffcccc; background-image:url('/rdc_printer/static/img/carte_rose_front.png'); background-size:cover; padding:3mm; position:relative; box-sizing:border-box; margin:0; overflow:hidden;">
+
+                    <!-- Header -->
+                    <div style="text-align:center; font-weight:bold; font-size:8px; margin-bottom:2mm;">
+                        REPUBLIQUE DEMOCRATIQUE DU CONGO<br/>
+                        CERTIFICAT D'IMMATRICULATION<br/>
+                        <span style="font-size:6px; font-weight:normal;">IDENTIFICATION DU PROPRIETAIRE</span>
+                    </div>
+
+                    <!-- Registration Number -->
+                    <div style="text-align:center; font-weight:bold; font-size:7px; margin-bottom:2mm;">
+                        DGI/01/2013/<span t-field="vehicle.unique_plate_number"/>/mv
+                    </div>
+
+                    <!-- Owner Information -->
+                    <div style="font-size:6px; line-height:1.2;">
+                        <div style="margin-bottom:1mm;">
+                            <b>Noms (ou Rais. Soc.) :</b> <span t-field="vehicle.driver_name"/>
+                        </div>
+                        <div style="margin-bottom:1mm;">
+                            <b>Adresses Phys. :</b> <span t-field="vehicle.driver_address"/>
+                        </div>
+                        <div style="margin-bottom:1mm;">
+                            <b>N° impôt :</b> <span t-field="vehicle.tax_number"/>
+                        </div>
+                        <div style="margin-bottom:1mm;">
+                            <b>Date de 1ère Mise en Circ. :</b> <span t-field="vehicle.first_registration"/>
+                        </div>
+                        <div style="margin-bottom:1mm;">
+                            <b>Usage :</b> <span t-field="vehicle.usage"/>
+                        </div>
+                        <div style="margin-bottom:1mm;">
+                            <b>N° Plaque :</b> <span t-field="vehicle.plate_sequence"/>
+                        </div>
+                    </div>
+
+                    <!-- QR Code positioned on the right side -->
+                    <div style="position:absolute; top:15mm; right:3mm; width:15mm; height:15mm;">
+                        <t t-if="vehicle.qr_code_image">
+                            <img t-att-src="'data:image/png;base64,%s' % vehicle.qr_code_image.decode('utf-8')" 
+                                 style="width:15mm; height:15mm; border:none;"/>
+                        </t>
+                    </div>
+
+                    <!-- Date and location at bottom -->
+                    <div style="position:absolute; bottom:2mm; left:3mm; font-size:6px; font-weight:bold;">
+                        Fait à Kinshasa, le <span t-field="vehicle.print_date" t-options="{'widget': 'date'}"/>
+                    </div>
+                </div>
+
+                <!-- BACK SIDE - Separate page -->
+                <div class="page" style="width:86mm; height:54mm; font-size:7px; font-family:Arial,sans-serif; background:#ffcccc; background-image:url('/rdc_printer/static/img/carte_rose_back.png'); background-size:cover; padding:3mm; position:relative; box-sizing:border-box; margin:0; overflow:hidden;">
+
+                    <!-- Header -->
+                    <div style="font-weight:bold; text-align:center; font-size:8px; margin-bottom:3mm;">
+                        IDENTIFICATION DU VEHICULE
+                    </div>
+
+                    <!-- Vehicle Information -->
+                    <div style="font-size:6px; line-height:1.3;">
+                        <div style="margin-bottom:1mm;">
+                            <b>MARQUE &amp; TYPE :</b> <span t-field="vehicle.brand"/>
+                        </div>
+                        <div style="margin-bottom:1mm;">
+                            <b>GENRE :</b> <span t-field="vehicle.vehicle_type"/>
+                        </div>
+                        <div style="margin-bottom:1mm;">
+                            <b>N° CHASSIS :</b> <span t-field="vehicle.chassis_number"/>
+                        </div>
+                        <div style="margin-bottom:1mm;">
+                            <b>ANNEE DE FABRICATION :</b> <span t-field="vehicle.manufacturing_year"/>
+                        </div>
+                        <div style="margin-bottom:1mm;">
+                            <b>COULEUR :</b> <span t-field="vehicle.color"/>
+                        </div>
+                        <div style="margin-bottom:1mm;">
+                            <b>PUISSANCE FISCALE :</b> <span t-field="vehicle.fiscal_power"/>
+                        </div>
+                    </div>
+
+                    <!-- Important Remarks Section -->
+                    <div style="margin-top:3mm; font-size:5px; line-height:1.1;">
+                        <div style="font-weight:bold; text-decoration:underline; margin-bottom:1mm;">REMARQUES IMPORTANTES</div>
+                        <div style="text-align:justify;">
+                            En cas de vente ou cession du véhicule, le cessionnaire et le cédant doivent, sous peine d'amende, en faire chacun la déclaration dans la quinzaine au Responsable du Service Véhicule ou au commissionnaire à sa résidence principale. Ces déclarations doivent être remises de la main à la main ou être adressées par lettre recommandée au fonctionnaire précité. A celui du cédant doit être joint le présent certificat aux fins de validation. Les numéros propriétaires du cédant et du cessionnaire sont exigés en cas de mutation.
+                        </div>
+                    </div>
+
+                    <!-- Responsible Officer -->
+                    <div style="position:absolute; bottom:2mm; right:3mm; font-size:6px; text-align:right;">
+                        <div>Responsable du service</div>
+                        <div>véhicule</div>
+                        <div style="font-weight:bold; margin-top:1mm;">Nelly Mbila Nzazi</div>
+                    </div>
+                </div>
+
+            </t>
+        </t>
+    </template>
+
+    <!-- Report Action -->
+    <record id="action_report_carte_rose" model="ir.actions.report">
+        <field name="name">Carte Rose</field>
+        <field name="model">vehicle.registration</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">rdc_printer.carte_rose_document</field>
+        <field name="report_file">rdc_printer.carte_rose_document</field>
+        <field name="binding_model_id" ref="model_vehicle_registration"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="rdc_printer.paperformat_carte_rose"/>
+    </record>
+</odoo>
