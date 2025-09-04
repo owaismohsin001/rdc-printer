@@ -123,14 +123,12 @@
     </template>
 
     <!-- Report Action -->
-    <!-- <record id="action_report_carte_rose" model="ir.actions.report">
-        <field name="name">Carte Rose</field>
-        <field name="model">vehicle.registration</field>
-        <field name="report_type">qweb-pdf</field>
-        <field name="report_name">rdc_printer.carte_rose_document</field>
-        <field name="report_file">rdc_printer.carte_rose_document</field>
-        <field name="binding_model_id" ref="model_vehicle_registration"/>
-        <field name="binding_type">report</field>
-        <field name="paperformat_id" ref="rdc_printer.paperformat_carte_rose"/>
-    </record> -->
+   <record id="action_report_carte_rose" model="ir.actions.report">
+    <field name="name">Carte Rose</field>
+    <field name="model">vehicle.registration</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">rdc_printer.carte_rose_document</field>
+    <field name="report_file">rdc_printer.carte_rose_document</field>
+    <field name="paperformat_id" ref="rdc_printer.paperformat_carte_rose"/>
+</record>
 </odoo>
