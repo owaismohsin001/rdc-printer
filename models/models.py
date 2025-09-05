@@ -216,10 +216,25 @@ class VehicleRegistration(models.Model):
         return plate
 
     # 3
+    # def action_print_carte_rose(self):
+    #     """Generate and print Carte Rose"""
+    #     if not self.qr_code_image:
+    #         self.generate_qr_code()
+    #     self.env["vehicle.print.history"].create(
+    #         {
+    #             "vehicle_id": self.id,
+    #             "print_type": "carte_rose",
+    #             "printer_name": "Authentys Pro RT1",
+    #             "print_status": "success",
+    #             "notes": "Carte Rose printed",
+    #         }
+    #     )
+    #     return self.env.ref("rdc_printer.action_report_carte_rose").report_action(self)
     def action_print_carte_rose(self):
         """Generate and print Carte Rose"""
         if not self.qr_code_image:
             self.generate_qr_code()
+
         self.env["vehicle.print.history"].create(
             {
                 "vehicle_id": self.id,
@@ -229,7 +244,48 @@ class VehicleRegistration(models.Model):
                 "notes": "Carte Rose printed",
             }
         )
-        return self.env.ref("rdc_printer.action_report_carte_rose").report_action(self)
+
+        # Try to find existing report first
+        report = self.env["ir.actions.report"].search(
+            [("report_name", "=", "rdc_printer.carte_rose_document")], limit=1
+        )
+
+        if not report:
+            # Create the report if it doesn't exist
+            paperformat = self.env["report.paperformat"].search(
+                [("name", "=", "Carte Rose Format")], limit=1
+            )
+
+            if not paperformat:
+                paperformat = self.env["report.paperformat"].create(
+                    {
+                        "name": "Carte Rose Format",
+                        "format": "custom",
+                        "page_height": 54,
+                        "page_width": 86,
+                        "margin_top": 0,
+                        "margin_bottom": 0,
+                        "margin_left": 0,
+                        "margin_right": 0,
+                        "orientation": "Portrait",
+                        "header_line": False,
+                        "header_spacing": 0,
+                        "dpi": 90,
+                    }
+                )
+
+            report = self.env["ir.actions.report"].create(
+                {
+                    "name": "Carte Rose",
+                    "model": "vehicle.registration",
+                    "report_type": "qweb-pdf",
+                    "report_name": "rdc_printer.carte_rose_document",
+                    "report_file": "rdc_printer.carte_rose_document",
+                    "paperformat_id": paperformat.id,
+                }
+            )
+
+        return report.report_action(self)
 
 
 # 2
