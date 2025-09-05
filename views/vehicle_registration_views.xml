@@ -28,15 +28,15 @@
                     <button name="generate_qr_code" type="object" string="Generate QR Code" class="btn-primary"
                             help="Generate QR code for this vehicle registration"/>
                     <button name="action_print_carte_rose"  type='object' string="Print Carte Rose" class="btn-success"
-                            help="Generate and print Carte Rose PDF" />      
+                            help="Generate and print Carte Rose PDF" />    
+                    <!-- # 5   -->
+                    <!-- <button name="generate_plate_image" type="object" string="Generate Plate Image" 
+                            class="btn-secondary" help="Generate license plate image"/> -->
+                    <button name="action_print_license_plate" type="object" string="Print License Plate" 
+        class="btn-info" help="Generate and print license plate"/>
                 </header>
                 <sheet>
-                    <!-- Statistics Button Box -->
-                    <!-- <div class="oe_button_box" name="button_box">
-                        <button class="oe_stat_button" type="object" name="action_view_documents" icon="fa-file-text-o">
-                            <field string="Documents" name="document_ids" widget="statinfo"/>
-                        </button>
-                    </div> -->
+                
                     
                     <!-- Main Vehicle and Driver Information -->
                     <group>
@@ -73,7 +73,7 @@
                     </group>
 
                     <!-- QR Code Section - Dedicated Area -->
-                    <separator string="QR Code Information"/>
+                    <!-- <separator string="QR Code Information"/>
                     <group>
                         <group name="qr_display" string="QR Code">
                             <field name="qr_code_image" widget="image" readonly="1" 
@@ -87,7 +87,32 @@
                                 <strong>Note:</strong> Click "Generate QR Code" button to create or update the QR code with current vehicle information.
                             </div>
                         </group>
-                    </group>
+                    </group> -->
+                    <!-- QR Code Section - Dedicated Area -->
+                    <!-- # 5 -->
+<separator string="QR Code &amp; License Plate"/>
+<group>
+    <group name="qr_display" string="QR Code">
+        <field name="qr_code_image" widget="image" readonly="1" 
+               class="oe_avatar" options="{'size': [350, 350]}"
+               help="QR code containing vehicle information"/>
+    </group>
+    <group name="plate_display" string="License Plate">
+        <field name="plate_image" widget="image" readonly="1" 
+               class="oe_avatar" options="{'size': [400, 200]}"
+               help="Generated license plate image"/>
+    </group>
+</group>
+<group>
+    <group name="qr_data" string="QR Code Data">
+        <field name="qr_code_data" readonly="1" widget="text"
+               help="JSON data encoded in the QR code"/>
+        <div class="alert alert-info" role="alert" style="margin-top: 10px;">
+            <strong>Note:</strong> Click "Generate QR Code" button to create or update the QR code with current vehicle information.
+        </div>
+    </group>
+    <group></group> <!-- Empty group for layout balance -->
+</group>
 
                     <!-- Documents Section with Upload Capability -->
                     <notebook>
@@ -192,6 +217,15 @@
 </record>
 
 
+<!-- # 5 -->
+<record id="action_report_license_plate" model="ir.actions.report">
+    <field name="name">License Plate</field>
+    <field name="model">vehicle.registration</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">rdc_printer.license_plate_document</field>
+    <field name="report_file">rdc_printer.license_plate_document</field>
+    <field name="binding_model_id" ref="model_vehicle_registration"/>
+</record>
 
 
     <!-- Vehicle Document Action -->

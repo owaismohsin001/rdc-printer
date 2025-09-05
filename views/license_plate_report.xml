@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="license_plate_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="vehicle">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div style="text-align: center; margin-top: 50px;">
+                            <img t-if="vehicle.plate_image" 
+                                 t-att-src="'data:image/png;base64,' + vehicle.plate_image.decode()"
+                                 style="max-width: 100%; height: auto;"/>
+                            <div t-if="not vehicle.plate_image" style="padding: 50px; border: 2px dashed #ccc;">
+                                <p>No plate image generated. Click "Generate Plate Image" first.</p>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

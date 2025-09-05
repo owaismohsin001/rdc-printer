@@ -22,6 +22,7 @@ Long description of module's purpose
         # "views/vehicle_document_actions.xml",
         "views/vehicle_registration_views.xml",
         "views/carte_rose_report.xml",
+        "views/license_plate_report.xml",
     ],
     # only loaded in demonstration mode
     "demo": [

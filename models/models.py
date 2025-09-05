@@ -6,6 +6,11 @@ import json
 import logging
 from io import BytesIO
 
+# 5
+from PIL import Image, ImageDraw, ImageFont
+import io
+from odoo.modules import get_resource_path
+
 _logger = logging.getLogger(__name__)
 
 
@@ -71,7 +76,7 @@ class VehicleRegistration(models.Model):
     is_reprinted = fields.Boolean(
         string="Is Reprinted", default=False, tracking=True
     )  # 1
-
+    plate_image = fields.Binary(string="License Plate Image")  # 5
     # Region mapping for last 2 digits of plate
     region_code = fields.Selection(
         [
@@ -216,20 +221,6 @@ class VehicleRegistration(models.Model):
         return plate
 
     # 3
-    # def action_print_carte_rose(self):
-    #     """Generate and print Carte Rose"""
-    #     if not self.qr_code_image:
-    #         self.generate_qr_code()
-    #     self.env["vehicle.print.history"].create(
-    #         {
-    #             "vehicle_id": self.id,
-    #             "print_type": "carte_rose",
-    #             "printer_name": "Authentys Pro RT1",
-    #             "print_status": "success",
-    #             "notes": "Carte Rose printed",
-    #         }
-    #     )
-    #     return self.env.ref("rdc_printer.action_report_carte_rose").report_action(self)
     def action_print_carte_rose(self):
         """Generate and print Carte Rose"""
         if not self.qr_code_image:
@@ -286,6 +277,146 @@ class VehicleRegistration(models.Model):
             )
 
         return report.report_action(self)
+
+    # 5
+    def generate_plate_image(self):
+        """Generate license plate image with vehicle number overlaid on template"""
+        for record in self:
+            try:
+                template_path = get_resource_path(
+                    "rdc_printer", "static", "src", "img", "numberPlate.png"
+                )
+                if not template_path:
+                    _logger.error("Template image not found via get_resource_path()")
+                    continue
+
+                template = Image.open(template_path).convert("RGBA")
+                draw = ImageDraw.Draw(template)
+
+                text = str(record.plate_sequence or "").strip()
+                if not text:
+                    _logger.error(f"Record {record.id}: plate_sequence empty")
+                    continue
+
+                font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+
+                # start very large and shrink until it fits
+                font_size = template.height
+                padding = 20
+
+                while font_size > 10:
+                    try:
+                        font = ImageFont.truetype(font_path, font_size)
+                    except Exception:
+                        _logger.warning("TTF font not found, using default font")
+                        font = ImageFont.load_default()
+                        break
+
+                    bbox = draw.textbbox((0, 0), text, font=font)
+                    text_width = bbox[2] - bbox[0]
+                    text_height = bbox[3] - bbox[1]
+
+                    if (text_width <= template.width - padding * 2) and (
+                        text_height <= template.height - padding * 2
+                    ):
+                        break  # it fits
+                    font_size -= 60
+                    font = ImageFont.truetype(font_path, font_size)
+
+                # --- split text into main and region code ---
+                if len(text) > 2:
+                    main_text = text[:-2]  # all except last 2
+                    region_code = text[-2:]  # last 2 chars
+                else:
+                    main_text = text
+                    region_code = ""
+
+                # measure both parts
+                bbox_main = draw.textbbox((0, 0), main_text, font=font)
+                main_width = bbox_main[2] - bbox_main[0]
+                main_height = bbox_main[3] - bbox_main[1]
+
+                bbox_region = (
+                    draw.textbbox((0, 0), region_code, font=font)
+                    if region_code
+                    else (0, 0, 0, 0)
+                )
+                region_width = bbox_region[2] - bbox_region[0]
+
+                # add gap between main number and region code
+                gap = 120  # adjust spacing here
+                total_width = main_width + (gap if region_code else 0) + region_width
+
+                # center horizontally
+                x = (template.width - total_width) // 2
+                # center vertically
+                y = (template.height - main_height) // 2 - bbox[1] // 2
+
+                # draw main number
+                draw.text((x, y), main_text, font=font, fill="black")
+
+                # draw region code shifted to the right
+                if region_code:
+                    draw.text(
+                        (x + main_width + gap, y), region_code, font=font, fill="black"
+                    )
+
+                # ADD QR CODE TO LEFT BOTTOM CORNER
+                if record.qr_code_image:
+                    try:
+                        # Decode the base64 QR code image
+                        qr_image_data = base64.b64decode(record.qr_code_image)
+                        qr_image = Image.open(io.BytesIO(qr_image_data)).convert("RGBA")
+
+                        # Calculate QR code size (make it small, e.g., 15% of plate height)
+                        qr_size = int(template.height * 0.15)
+                        qr_image = qr_image.resize(
+                            (qr_size, qr_size), Image.Resampling.LANCZOS
+                        )
+
+                        # Position: left bottom corner with small margin
+                        qr_margin = 5
+                        qr_x = qr_margin + 120
+                        qr_y = template.height - qr_size - qr_margin
+
+                        # Paste QR code onto the template
+                        template.paste(qr_image, (qr_x, qr_y), qr_image)
+
+                    except Exception as qr_error:
+                        _logger.warning(f"Failed to add QR code to plate: {qr_error}")
+
+                # save to base64
+                buffer = io.BytesIO()
+                template.save(buffer, format="PNG")
+                plate_image_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
+
+                record.plate_image = plate_image_base64
+
+            except Exception:
+                _logger.exception("Unexpected error while generating plate image")
+
+    # 5
+    def action_print_license_plate(self):
+        """Generate and print license plate"""
+        if not self.qr_code_image:
+            self.generate_qr_code()
+
+        if not self.plate_image:
+            self.generate_plate_image()
+
+        self.env["vehicle.print.history"].create(
+            {
+                "vehicle_id": self.id,
+                "print_type": "license_plate",
+                "printer_name": "Default Printer",
+                "print_status": "success",
+                "notes": "License plate printed",
+            }
+        )
+
+        return self.env.ref("rdc_printer.action_report_license_plate").report_action(
+            self
+        )
 
 
 # 2
